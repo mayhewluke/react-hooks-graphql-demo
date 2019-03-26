@@ -1,28 +1,51 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+import React from 'react';
+import ApolloClient from "apollo-boost";
+import { ApolloProvider, Query } from "react-apollo";
+import gql from "graphql-tag";
+
+import LineItem from "./LineItem";
+
+const sizesQuery = gql`
+  {
+    pizzaSizes {
+      name
+      basePrice
+    }
   }
+`;
+
+interface SizesQueryData {
+  pizzaSizes: { name: string, maxToppings: number, basePrice: number }[]
 }
+
+const App = () => (
+  <>
+    <h1>Puperoni Pizza Palace</h1>
+    <h2>Your order:</h2>
+    <Query<SizesQueryData> query={sizesQuery}>
+      {({ loading, error, data }) => {
+        if (loading) return <p>Loading...</p>;
+        if (error) return <p>{error.toString()}</p>;
+        return (
+          <table id="order-summary">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data && data.pizzaSizes.map(({ name, basePrice }) =>
+                <LineItem name={name} cost={basePrice} />
+              )}
+            </tbody>
+          </table>
+        )
+      }}
+    </Query>
+  </>
+);
 
 export default App;
