@@ -1,9 +1,14 @@
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 
+import { getByText as domGetByText } from "dom-testing-library";
 import React from "react";
 import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
-import { render as rtlRender, wait } from "react-testing-library";
+import {
+  render as rtlRender,
+  wait,
+  waitForElement,
+} from "react-testing-library";
 
 import LineItem from "../LineItem/LineItem";
 import OrderSummary, { SIZES_QUERY } from "./OrderSummary";
@@ -58,5 +63,20 @@ describe("OrderSummary", () => {
         expect(LineItem).toHaveBeenCalledWith({ size: name, cost: basePrice }),
       ),
     );
+  });
+
+  describe("add pizza form", () => {
+    const response = { result: { data: { pizzaSizes } } };
+
+    it("allows any fetched size of pizza to be selected", async () => {
+      const { getByLabelText, container } = render(response);
+      const sizeSelect = await waitForElement(() => getByLabelText("Size"), {
+        container,
+      });
+
+      pizzaSizes.map(({ name }) =>
+        expect(domGetByText(sizeSelect, name)).toHaveAttribute("value", name),
+      );
+    });
   });
 });

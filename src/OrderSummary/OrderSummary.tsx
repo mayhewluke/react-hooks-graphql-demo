@@ -38,6 +38,21 @@ const OrderSummary = () => (
                 ))}
             </tbody>
           </table>
+          {data && (
+            <div>
+              <h3>Add a new pizza</h3>
+              <form>
+                <label htmlFor="size">Size</label>
+                <select id="size">
+                  {data.pizzaSizes.map(({ name }) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </form>
+            </div>
+          )}
         </>
       );
     }}
