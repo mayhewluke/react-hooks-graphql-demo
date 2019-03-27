@@ -8,7 +8,7 @@ export interface Props {
 const LineItem: React.SFC<Props> = ({ name, cost }) => (
   <tr>
     <td>{name}</td>
-    <td>{cost}</td>
+    <td>${cost}</td>
   </tr>
 );
 
