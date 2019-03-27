@@ -5,8 +5,8 @@ import React from "react";
 import { ApolloProvider } from "react-apollo";
 import ReactDOM from "react-dom";
 
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
+import App from "./App/App";
+import * as serviceWorker from "./create-react-app/serviceWorker";
 
 const graphqlClient = new ApolloClient({
   uri: "https://core-graphql.dev.waldo.photos/pizza",
