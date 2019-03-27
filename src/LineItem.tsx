@@ -1,13 +1,13 @@
 import React from "react";
 
 export interface Props {
-  name: string;
+  size: string;
   cost: number;
 }
 
-const LineItem: React.SFC<Props> = ({ name, cost }) => (
+const LineItem: React.SFC<Props> = ({ size, cost }) => (
   <tr>
-    <td>{name}</td>
+    <td>{size}</td>
     <td>${cost}</td>
   </tr>
 );

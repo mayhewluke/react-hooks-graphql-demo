@@ -38,7 +38,7 @@ const App = () => (
             <tbody>
               {data &&
                 data.pizzaSizes.map(({ name, basePrice }) => (
-                  <LineItem key={name} name={name} cost={basePrice} />
+                  <LineItem key={name} size={name} cost={basePrice} />
                 ))}
             </tbody>
           </table>
