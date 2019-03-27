@@ -20,6 +20,7 @@
     "interface-name": [false],
     "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case"],
     "array-type": [true, "array-simple"],
-    "prefer-array-literal": [true, { "allow-type-parameters": true } ]
+    "prefer-array-literal": [true, { "allow-type-parameters": true } ],
+    "no-unused-expression": true
   }
 }

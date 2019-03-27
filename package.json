@@ -19,7 +19,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "verify": "tslint -c tslint.json src/**/*.{ts,tsx} && tsc --noEmit"
   },
   "eslintConfig": {
     "extends": "react-app"

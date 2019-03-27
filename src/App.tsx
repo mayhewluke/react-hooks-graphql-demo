@@ -1,9 +1,8 @@
 import "./App.css";
 
-import ApolloClient from "apollo-boost";
 import gql from "graphql-tag";
 import React from "react";
-import { ApolloProvider, Query } from "react-apollo";
+import { Query } from "react-apollo";
 
 import LineItem from "./LineItem";
 
