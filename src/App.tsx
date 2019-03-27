@@ -1,9 +1,9 @@
-import './App.css';
+import "./App.css";
 
-import React from 'react';
 import ApolloClient from "apollo-boost";
-import { ApolloProvider, Query } from "react-apollo";
 import gql from "graphql-tag";
+import React from "react";
+import { ApolloProvider, Query } from "react-apollo";
 
 import LineItem from "./LineItem";
 
@@ -17,7 +17,7 @@ const sizesQuery = gql`
 `;
 
 interface SizesQueryData {
-  pizzaSizes: { name: string, maxToppings: number, basePrice: number }[]
+  pizzaSizes: Array<{ name: string; maxToppings: number; basePrice: number }>;
 }
 
 const App = () => (
@@ -37,12 +37,13 @@ const App = () => (
               </tr>
             </thead>
             <tbody>
-              {data && data.pizzaSizes.map(({ name, basePrice }) =>
-                <LineItem name={name} cost={basePrice} />
-              )}
+              {data &&
+                data.pizzaSizes.map(({ name, basePrice }) => (
+                  <LineItem key={name} name={name} cost={basePrice} />
+                ))}
             </tbody>
           </table>
-        )
+        );
       }}
     </Query>
   </>

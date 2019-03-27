@@ -5,7 +5,7 @@ export interface Props {
   cost: number;
 }
 
-const LineItem = ({ name, cost }: Props) => (
+const LineItem: React.SFC<Props> = ({ name, cost }) => (
   <tr>
     <td>{name}</td>
     <td>{cost}</td>
