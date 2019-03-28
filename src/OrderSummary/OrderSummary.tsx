@@ -23,7 +23,7 @@ interface SizesQueryData {
   pizzaSizes: Array<{ name: string; basePrice: number }>;
 }
 
-const renderOrder = (pizzas: LineItem[]) => (
+const renderOrder = (pizzas: LineItem[], removePizza: (i: number) => void) => (
   <>
     <h3>Total: ${pizzas.reduce((sum, { price }) => sum + price, 0)}</h3>
     <table id="order-summary">
@@ -35,11 +35,16 @@ const renderOrder = (pizzas: LineItem[]) => (
         </tr>
       </thead>
       <tbody>
-        {pizzas.map(({ size, price, toppings }) => (
+        {pizzas.map(({ size, price, toppings }, index) => (
           <tr key={`${size}${toppings}`}>
             <td>{size}</td>
             <td>{toppings.join(", ")}</td>
             <td>${price}</td>
+            <td>
+              <button type="button" onClick={() => removePizza(index)}>
+                X
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -49,12 +54,18 @@ const renderOrder = (pizzas: LineItem[]) => (
 
 const OrderSummary = () => {
   const [pizzas, setPizzas] = useState([] as LineItem[]);
+  const removePizza = (index: number) =>
+    setPizzas(pizzas.filter((_, i) => index !== i));
   return (
     <Query<SizesQueryData> query={SIZES_QUERY}>
       {({ loading, error, data }) => (
         <>
           <div data-testid="order">
-            {pizzas.length ? renderOrder(pizzas) : <p>No pizzas ordered yet</p>}
+            {pizzas.length ? (
+              renderOrder(pizzas, removePizza)
+            ) : (
+              <p>No pizzas ordered yet</p>
+            )}
           </div>
           {loading && <p>Loading...</p>}
           {error && <p>{error.toString()}</p>}

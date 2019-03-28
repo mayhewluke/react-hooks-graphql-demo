@@ -3,7 +3,12 @@ import "react-testing-library/cleanup-after-each";
 
 import React from "react";
 import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
-import { render as rtlRender, wait } from "react-testing-library";
+import {
+  fireEvent,
+  render as rtlRender,
+  wait,
+  waitForElement,
+} from "react-testing-library";
 
 import AddPizza from "../AddPizza/AddPizza";
 import OrderSummary, { SIZES_QUERY } from "./OrderSummary";
@@ -93,5 +98,25 @@ describe("OrderSummary", () => {
     addPizza(prices[1]);
 
     await wait(() => expect(container).toHaveTextContent(`$${30}`));
+  });
+
+  it("removes the pizza from the list when the remove button is clicked", async () => {
+    const removeIndex = 1;
+    const pizzas = ["small", "big", "jumbo"];
+    const { queryByText, queryAllByText } = render({
+      result: { data: { pizzaSizes } },
+    });
+    const addPizza = (size: string) =>
+      (AddPizza as any).mock.calls
+        .slice(-1)[0][0]
+        .addPizza({ size, price: 10, toppings: [] });
+
+    await wait(() => expect(queryByText(/loading/i)).not.toBeInTheDocument());
+    pizzas.forEach(size => addPizza(size));
+    const removeButtons = await waitForElement(() => queryAllByText("X"));
+
+    expect(queryByText(pizzas[removeIndex])).toBeInTheDocument();
+    fireEvent.click(removeButtons[removeIndex]);
+    expect(queryByText(pizzas[removeIndex])).not.toBeInTheDocument();
   });
 });
