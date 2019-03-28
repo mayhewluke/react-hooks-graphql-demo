@@ -14,6 +14,7 @@ import {
 import AddPizza, { TOPPINGS_QUERY } from "../AddPizza/AddPizza";
 
 describe("AddPizza", () => {
+  const addPizzaCallback = jest.fn();
   const pizzaSizes = [
     { name: "mini", basePrice: 10 },
     { name: "jumbo", basePrice: 20 },
@@ -49,7 +50,7 @@ describe("AddPizza", () => {
   const render = (mocks: MockedResponse[]) =>
     rtlRender(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <AddPizza pizzaSizes={pizzaSizes} />
+        <AddPizza pizzaSizes={pizzaSizes} addPizza={addPizzaCallback} />
       </MockedProvider>,
     );
 
@@ -172,5 +173,17 @@ describe("AddPizza", () => {
     expect(totalContainer).toHaveTextContent(
       `$${pizzaPrice + toppings[1].price}`,
     );
+  });
+
+  it("calls the addPizza callback when submitted", async () => {
+    const { getByText } = render([mockGql()]);
+    const size = pizzaSizes[0].name;
+    const topping = data.pizzaSizeByName.toppings[0].topping;
+    const price = pizzaSizes[0].basePrice + topping.price;
+    const toppings = [topping.name];
+
+    await wait(() => fireEvent.click(getByText("Add Pizza")));
+
+    expect(addPizzaCallback).toHaveBeenCalledWith({ size, price, toppings });
   });
 });

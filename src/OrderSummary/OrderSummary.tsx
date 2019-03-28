@@ -39,7 +39,9 @@ const OrderSummary = () => (
                 ))}
             </tbody>
           </table>
-          {data && <AddPizza pizzaSizes={data.pizzaSizes} />}
+          {data && (
+            <AddPizza pizzaSizes={data.pizzaSizes} addPizza={() => null} />
+          )}
         </>
       );
     }}

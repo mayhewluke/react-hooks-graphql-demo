@@ -29,9 +29,18 @@ interface ToppingsData {
 
 interface Props {
   pizzaSizes: Array<{ name: string; basePrice: number }>;
+  addPizza: ({
+    size,
+    price,
+    toppings,
+  }: {
+    size: string;
+    price: number;
+    toppings: string[];
+  }) => void;
 }
 
-const AddPizza: React.SFC<Props> = ({ pizzaSizes }) => {
+const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
   const [size, setSize] = useState(pizzaSizes[0].name);
   const [toppingSelections, setToppingSelections] = useState({} as Record<
     string,
@@ -114,7 +123,23 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes }) => {
             </div>
           </form>
           {data && data.pizzaSizeByName && (
-            <p>Total: ${total(data.pizzaSizeByName.toppings)}</p>
+            <>
+              <p>Total: ${total(data.pizzaSizeByName.toppings)}</p>
+              <button
+                type="submit"
+                onClick={() =>
+                  addPizza({
+                    size,
+                    price: total(data.pizzaSizeByName.toppings),
+                    toppings: Object.keys(toppingSelections).filter(
+                      name => toppingSelections[name],
+                    ),
+                  })
+                }
+              >
+                Add Pizza
+              </button>
+            </>
           )}
         </div>
       )}
