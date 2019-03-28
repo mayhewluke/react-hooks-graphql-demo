@@ -8,6 +8,7 @@ export const SIZES_QUERY = gql`
   {
     pizzaSizes {
       name
+      maxToppings
       basePrice
     }
   }
@@ -20,7 +21,11 @@ interface LineItem {
 }
 
 interface SizesQueryData {
-  pizzaSizes: Array<{ name: string; basePrice: number }>;
+  pizzaSizes: Array<{
+    name: string;
+    maxToppings: number | null;
+    basePrice: number;
+  }>;
 }
 
 const renderOrder = (pizzas: LineItem[], removePizza: (i: number) => void) => (

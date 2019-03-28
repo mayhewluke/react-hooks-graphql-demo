@@ -16,8 +16,8 @@ import AddPizza, { TOPPINGS_QUERY } from "../AddPizza/AddPizza";
 describe("AddPizza", () => {
   const addPizzaCallback = jest.fn();
   const pizzaSizes = [
-    { name: "mini", basePrice: 10 },
-    { name: "jumbo", basePrice: 20 },
+    { name: "mini", maxToppings: 1, basePrice: 10 },
+    { name: "jumbo", maxToppings: null, basePrice: 20 },
   ];
   const request = (pizzaSizeIndex: number = 0) => ({
     query: TOPPINGS_QUERY,
@@ -151,6 +151,55 @@ describe("AddPizza", () => {
       fireEvent.change(sizeSelect, { target: { value: size2 } });
 
       await wait(() => getByLabelText(size2Topping, { exact: false }));
+    });
+
+    it("limits toppings to the maxToppings for the pizza size", async () => {
+      const toppings = data.pizzaSizeByName.toppings.map(
+        ({ topping }) => topping.name,
+      );
+      const { getByLabelText, queryByTestId } = render([mockGql()]);
+
+      const checked = (await waitForElement(() =>
+        getByLabelText(toppings[0], { exact: false }),
+      )) as HTMLInputElement;
+      const unchecked = (await getByLabelText(toppings[1], {
+        exact: false,
+      })) as HTMLInputElement;
+
+      expect(checked.checked).toBe(true);
+      expect(unchecked.checked).toBe(false);
+      expect(unchecked).toBeDisabled();
+      // If already-checked toppings are also disabled the user won't be able to
+      // change their choices at all, since having them checked is why they're
+      // disabled
+      expect(checked).not.toBeDisabled();
+
+      expect(queryByTestId("max-toppings")).toBeInTheDocument();
+    });
+
+    it("does not limit toppings when maxToppings in null", async () => {
+      const toppings = data.pizzaSizeByName.toppings.map(
+        ({ topping }) => topping.name,
+      );
+      const pizzaSize = { ...pizzaSizes[0], maxToppings: null };
+      const { getByLabelText } = rtlRender(
+        <MockedProvider mocks={[mockGql()]} addTypename={false}>
+          <AddPizza pizzaSizes={[pizzaSize]} addPizza={addPizzaCallback} />
+        </MockedProvider>,
+      );
+
+      const checked = (await waitForElement(() =>
+        getByLabelText(toppings[0], { exact: false }),
+      )) as HTMLInputElement;
+      const unchecked = (await getByLabelText(toppings[1], {
+        exact: false,
+      })) as HTMLInputElement;
+
+      fireEvent.click(unchecked);
+      expect(checked.checked).toBe(true);
+      expect(unchecked.checked).toBe(true);
+      expect(checked).not.toBeDisabled();
+      expect(unchecked).not.toBeDisabled();
     });
   });
 

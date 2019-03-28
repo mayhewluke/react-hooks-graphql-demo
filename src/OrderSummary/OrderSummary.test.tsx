@@ -33,8 +33,8 @@ describe("OrderSummary", () => {
       </MockedProvider>,
     );
   const pizzaSizes = [
-    { name: "mini", basePrice: 1 },
-    { name: "jumbo", basePrice: 2 },
+    { name: "mini", maxToppings: 1, basePrice: 1 },
+    { name: "jumbo", maxToppings: 2, basePrice: 2 },
   ];
 
   it("shows a loading message while pizza info is loading", () => {

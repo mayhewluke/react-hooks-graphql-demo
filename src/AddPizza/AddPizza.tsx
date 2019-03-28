@@ -28,7 +28,11 @@ interface ToppingsData {
 }
 
 interface Props {
-  pizzaSizes: Array<{ name: string; basePrice: number }>;
+  pizzaSizes: Array<{
+    name: string;
+    maxToppings: number | null;
+    basePrice: number;
+  }>;
   addPizza: ({
     size,
     price,
@@ -77,6 +81,12 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
       ),
     [pizzaSizes, size, toppingSelections],
   );
+  const maxToppings = pizzaSizes.filter(({ name }) => name === size)[0]
+    .maxToppings;
+  const maxToppingsReached =
+    maxToppings !== null &&
+    Object.values(toppingSelections).filter(selected => selected).length >=
+      maxToppings;
   return (
     <Query<ToppingsData>
       query={TOPPINGS_QUERY}
@@ -116,10 +126,19 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
                         type="checkbox"
                         checked={toppingSelections[name] || defaultSelected}
                         onChange={() => toggleTopping(name)}
+                        disabled={
+                          !toppingSelections[name] && maxToppingsReached
+                        }
                       />
                     </div>
                   ),
                 )}
+              {maxToppingsReached && (
+                <p data-testid="max-toppings">
+                  You have reached the maximum number of toppings for {size}{" "}
+                  pizzas ({maxToppings})
+                </p>
+              )}
             </div>
           </form>
           {data && data.pizzaSizeByName && (
