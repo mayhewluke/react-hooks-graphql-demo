@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Query } from "react-apollo";
 
 import AddPizza from "../AddPizza/AddPizza";
+import { to$ } from "../utils";
 
 export const SIZES_QUERY = gql`
   {
@@ -30,7 +31,7 @@ interface SizesQueryData {
 
 const renderOrder = (pizzas: LineItem[], removePizza: (i: number) => void) => (
   <>
-    <h3>Total: ${pizzas.reduce((sum, { price }) => sum + price, 0)}</h3>
+    <h3>Total: {to$(pizzas.reduce((sum, { price }) => sum + price, 0))}</h3>
     <table id="order-summary">
       <thead>
         <tr>
@@ -44,7 +45,7 @@ const renderOrder = (pizzas: LineItem[], removePizza: (i: number) => void) => (
           <tr key={`${size}${toppings}`}>
             <td>{size}</td>
             <td>{toppings.join(", ")}</td>
-            <td>${price}</td>
+            <td>{to$(price)}</td>
             <td>
               <button type="button" onClick={() => removePizza(index)}>
                 X

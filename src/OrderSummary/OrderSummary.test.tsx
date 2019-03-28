@@ -11,6 +11,7 @@ import {
 } from "react-testing-library";
 
 import AddPizza from "../AddPizza/AddPizza";
+import { to$ } from "../utils";
 import OrderSummary, { SIZES_QUERY } from "./OrderSummary";
 
 jest.mock("../AddPizza/AddPizza", () => jest.fn(() => false));
@@ -77,7 +78,7 @@ describe("OrderSummary", () => {
 
     await wait(() => {
       expect(container).toHaveTextContent(newPizza.size);
-      expect(container).toHaveTextContent(`$${newPizza.price}`);
+      expect(container).toHaveTextContent(to$(newPizza.price));
       expect(container).toHaveTextContent(newPizza.toppings[0]);
     });
   });
@@ -97,7 +98,7 @@ describe("OrderSummary", () => {
     addPizza(prices[0]);
     addPizza(prices[1]);
 
-    await wait(() => expect(container).toHaveTextContent(`$${30}`));
+    await wait(() => expect(container).toHaveTextContent(to$(30)));
   });
 
   it("removes the pizza from the list when the remove button is clicked", async () => {

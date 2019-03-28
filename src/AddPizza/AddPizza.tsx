@@ -2,6 +2,8 @@ import gql from "graphql-tag";
 import React, { useCallback, useState } from "react";
 import { Query } from "react-apollo";
 
+import { to$ } from "../utils";
+
 export const TOPPINGS_QUERY = gql`
   query Toppings($pizzaSize: PizzaSizes!) {
     pizzaSizeByName(name: $pizzaSize) {
@@ -105,7 +107,7 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
             >
               {pizzaSizes.map(({ name, basePrice }) => (
                 <option key={name} value={name}>
-                  {name} - ${basePrice}
+                  {name} - {to$(basePrice)}
                 </option>
               ))}
             </select>
@@ -118,7 +120,7 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
                   ({ topping: { name, price }, defaultSelected }) => (
                     <div key={name} className="topping">
                       <label htmlFor={name}>
-                        {name}: ${price}
+                        {name}: {to$(price)}
                       </label>
                       <input
                         id={name}
@@ -143,7 +145,7 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
           </form>
           {data && data.pizzaSizeByName && (
             <>
-              <p>Total: ${total(data.pizzaSizeByName.toppings)}</p>
+              <p>Total: {to$(total(data.pizzaSizeByName.toppings))}</p>
               <button
                 type="submit"
                 onClick={() =>

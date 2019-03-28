@@ -12,6 +12,7 @@ import {
 } from "react-testing-library";
 
 import AddPizza, { TOPPINGS_QUERY } from "../AddPizza/AddPizza";
+import { to$ } from "../utils";
 
 describe("AddPizza", () => {
   const addPizzaCallback = jest.fn();
@@ -76,7 +77,7 @@ describe("AddPizza", () => {
     pizzaSizes.map(({ name, basePrice }) =>
       expect(
         within(sizeSelect).getByText(name, { exact: false }),
-      ).toHaveTextContent(`$${basePrice}`),
+      ).toHaveTextContent(to$(basePrice)),
     );
   });
 
@@ -101,7 +102,7 @@ describe("AddPizza", () => {
             expect(
               (getByLabelText(name, { exact: false }) as HTMLInputElement)
                 .labels![0],
-            ).toHaveTextContent(`$${price}`),
+            ).toHaveTextContent(to$(price)),
           ),
         ),
       );
@@ -215,12 +216,12 @@ describe("AddPizza", () => {
 
     // Pizza only - first input defaults to checked
     fireEvent.click(inputs[0]);
-    expect(totalContainer).toHaveTextContent(`$${pizzaPrice}`);
+    expect(totalContainer).toHaveTextContent(to$(pizzaPrice));
 
     // Pizza plus a topping
     fireEvent.click(inputs[1]);
     expect(totalContainer).toHaveTextContent(
-      `$${pizzaPrice + toppings[1].price}`,
+      to$(pizzaPrice + toppings[1].price),
     );
   });
 
