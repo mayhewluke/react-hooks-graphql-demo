@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Query } from "react-apollo";
 
 import AddPizza from "../AddPizza/AddPizza";
-import LineItem from "../LineItem/LineItem";
 
 export const SIZES_QUERY = gql`
   {
@@ -29,12 +28,17 @@ const renderOrder = (pizzas: LineItem[]) => (
     <thead>
       <tr>
         <th>Size</th>
+        <th>Toppings</th>
         <th>Price</th>
       </tr>
     </thead>
     <tbody>
-      {pizzas.map(({ size, price }, index) => (
-        <LineItem key={index} size={size} cost={price} />
+      {pizzas.map(({ size, price, toppings }) => (
+        <tr key={`${size}${toppings}`}>
+          <td>{size}</td>
+          <td>{toppings.join(", ")}</td>
+          <td>${price}</td>
+        </tr>
       ))}
     </tbody>
   </table>

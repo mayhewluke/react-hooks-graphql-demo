@@ -5,9 +5,10 @@ import React from "react";
 import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
 import { render as rtlRender, wait } from "react-testing-library";
 
+import AddPizza from "../AddPizza/AddPizza";
 import OrderSummary, { SIZES_QUERY } from "./OrderSummary";
 
-jest.mock("../LineItem/LineItem", () => jest.fn(() => false));
+jest.mock("../AddPizza/AddPizza", () => jest.fn(() => false));
 
 describe("OrderSummary", () => {
   const render = (response: Partial<MockedResponse>) =>
@@ -55,5 +56,24 @@ describe("OrderSummary", () => {
     await wait(() =>
       expect(getByTestId("order").textContent).toMatchSnapshot(),
     );
+  });
+
+  it("adds the pizza to the list when the addPizza callback is called", async () => {
+    const { container, queryByText } = render({
+      result: { data: { pizzaSizes } },
+    });
+
+    await wait(() => expect(queryByText(/loading/i)).not.toBeInTheDocument());
+    const addPizzaCallback = (AddPizza as any).mock.calls.slice(-1)[0][0]
+      .addPizza;
+    const newPizza = { size: "tiny", price: 0.1, toppings: ["cheese"] };
+
+    addPizzaCallback(newPizza);
+
+    await wait(() => {
+      expect(container).toHaveTextContent(newPizza.size);
+      expect(container).toHaveTextContent(`$${newPizza.price}`);
+      expect(container).toHaveTextContent(newPizza.toppings[0]);
+    });
   });
 });
