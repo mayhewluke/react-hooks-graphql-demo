@@ -24,24 +24,27 @@ interface SizesQueryData {
 }
 
 const renderOrder = (pizzas: LineItem[]) => (
-  <table id="order-summary">
-    <thead>
-      <tr>
-        <th>Size</th>
-        <th>Toppings</th>
-        <th>Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {pizzas.map(({ size, price, toppings }) => (
-        <tr key={`${size}${toppings}`}>
-          <td>{size}</td>
-          <td>{toppings.join(", ")}</td>
-          <td>${price}</td>
+  <>
+    <h3>Total: ${pizzas.reduce((sum, { price }) => sum + price, 0)}</h3>
+    <table id="order-summary">
+      <thead>
+        <tr>
+          <th>Size</th>
+          <th>Toppings</th>
+          <th>Price</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {pizzas.map(({ size, price, toppings }) => (
+          <tr key={`${size}${toppings}`}>
+            <td>{size}</td>
+            <td>{toppings.join(", ")}</td>
+            <td>${price}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </>
 );
 
 const OrderSummary = () => {

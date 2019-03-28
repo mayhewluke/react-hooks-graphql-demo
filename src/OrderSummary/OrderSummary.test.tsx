@@ -76,4 +76,22 @@ describe("OrderSummary", () => {
       expect(container).toHaveTextContent(newPizza.toppings[0]);
     });
   });
+
+  it("displays the total cost of all pizzas added", async () => {
+    const { container, queryByText } = render({
+      result: { data: { pizzaSizes } },
+    });
+
+    await wait(() => expect(queryByText(/loading/i)).not.toBeInTheDocument());
+    const addPizza = (price: number) =>
+      (AddPizza as any).mock.calls
+        .slice(-1)[0][0]
+        .addPizza({ price, size: "big", toppings: [] });
+    const prices = [10, 20];
+
+    addPizza(prices[0]);
+    addPizza(prices[1]);
+
+    await wait(() => expect(container).toHaveTextContent(`$${30}`));
+  });
 });
