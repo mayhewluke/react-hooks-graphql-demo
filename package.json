@@ -20,7 +20,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "verify": "tslint -c tslint.json src/**/*.{ts,tsx} && tsc --noEmit && CI=true yarn test"
+    "lint": "tslint -c tslint.json src/**/*.{ts,tsx} ",
+    "typecheck": "tsc --noEmit",
+    "verify": "concurrently -n \"LINT,TSC,TEST\" -c \"blue,magenta,yellow\" \"yarn lint\" \"yarn typecheck\" \"CI=true yarn test\""
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,6 +34,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "concurrently": "^4.1.0",
     "dom-testing-library": "^3.18.2",
     "husky": "^1.3.1",
     "jest-dom": "^3.1.3",
