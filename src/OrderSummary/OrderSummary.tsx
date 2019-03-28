@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Query } from "react-apollo";
 
 import AddPizza from "../AddPizza/AddPizza";
+import { PizzaSize } from "../models";
 import { to$ } from "../utils";
 
 export const SIZES_QUERY = gql`
@@ -22,11 +23,7 @@ interface LineItem {
 }
 
 interface SizesQueryData {
-  pizzaSizes: Array<{
-    name: string;
-    maxToppings: number | null;
-    basePrice: number;
-  }>;
+  pizzaSizes: PizzaSize[];
 }
 
 const renderOrder = (pizzas: LineItem[], removePizza: (i: number) => void) => (

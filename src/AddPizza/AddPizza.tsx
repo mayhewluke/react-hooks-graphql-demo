@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 import React, { useCallback, useState } from "react";
 import { Query } from "react-apollo";
 
+import { PizzaSize, Topping } from "../models";
 import { to$ } from "../utils";
 
 export const TOPPINGS_QUERY = gql`
@@ -18,11 +19,6 @@ export const TOPPINGS_QUERY = gql`
   }
 `;
 
-interface Topping {
-  name: string;
-  price: number;
-}
-
 interface ToppingsData {
   pizzaSizeByName: {
     toppings: Array<{ topping: Topping; defaultSelected: boolean }>;
@@ -30,11 +26,7 @@ interface ToppingsData {
 }
 
 interface Props {
-  pizzaSizes: Array<{
-    name: string;
-    maxToppings: number | null;
-    basePrice: number;
-  }>;
+  pizzaSizes: PizzaSize[];
   addPizza: ({
     size,
     price,
