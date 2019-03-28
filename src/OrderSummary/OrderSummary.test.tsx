@@ -5,7 +5,6 @@ import React from "react";
 import { MockedProvider, MockedResponse } from "react-apollo/test-utils";
 import { render as rtlRender, wait } from "react-testing-library";
 
-import LineItem from "../LineItem/LineItem";
 import OrderSummary, { SIZES_QUERY } from "./OrderSummary";
 
 jest.mock("../LineItem/LineItem", () => jest.fn(() => false));
@@ -33,7 +32,7 @@ describe("OrderSummary", () => {
   ];
 
   it("shows a loading message while pizza info is loading", () => {
-    const { container } = render({});
+    const { container } = render({ result: { data: { pizzaSizes } } });
     expect(container).toHaveTextContent(/loading/i);
   });
 
@@ -49,13 +48,12 @@ describe("OrderSummary", () => {
     await wait(() => expect(container).toHaveTextContent(/error/i));
   });
 
-  // TODO replace with *actual* order info
-  it("fake populates the order with the loaded pizza sizes", () => {
-    render({ result: { data: { pizzaSizes } } });
-    wait(() =>
-      pizzaSizes.map(({ name, basePrice }) =>
-        expect(LineItem).toHaveBeenCalledWith({ size: name, cost: basePrice }),
-      ),
+  it("displays a message when no pizzas have been added yet", async () => {
+    const { getByTestId } = render({
+      result: { data: { pizzaSizes } },
+    });
+    await wait(() =>
+      expect(getByTestId("order").textContent).toMatchSnapshot(),
     );
   });
 });

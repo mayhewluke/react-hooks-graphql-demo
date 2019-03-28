@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OrderSummary displays a message when no pizzas have been added yet 1`] = `"No pizzas ordered yet"`;
