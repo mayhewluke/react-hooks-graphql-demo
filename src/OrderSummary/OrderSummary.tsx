@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 import React from "react";
 import { Query } from "react-apollo";
 
+import AddPizza from "../AddPizza/AddPizza";
 import LineItem from "../LineItem/LineItem";
 
 export const SIZES_QUERY = gql`
@@ -38,21 +39,7 @@ const OrderSummary = () => (
                 ))}
             </tbody>
           </table>
-          {data && (
-            <div>
-              <h3>Add a new pizza</h3>
-              <form>
-                <label htmlFor="size">Size</label>
-                <select id="size">
-                  {data.pizzaSizes.map(({ name }) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-              </form>
-            </div>
-          )}
+          {data && <AddPizza pizzaSizes={data.pizzaSizes} />}
         </>
       );
     }}
