@@ -45,10 +45,34 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes }) => {
       }),
     [toppingSelections],
   );
+  const updateSelectedToppings = useCallback(
+    (data: ToppingsData) =>
+      setToppingSelections(
+        data.pizzaSizeByName.toppings.reduce(
+          (out, { defaultSelected, topping: { name } }) => ({
+            ...out,
+            [name]: defaultSelected,
+          }),
+          {},
+        ),
+      ),
+    [toppingSelections],
+  );
+  const total = useCallback(
+    toppings =>
+      pizzaSizes.filter(({ name }) => name === size)[0].basePrice +
+      toppings.reduce(
+        (sum: number, { topping: { name, price } }: { topping: Topping }) =>
+          toppingSelections[name] ? sum + price : sum,
+        0,
+      ),
+    [pizzaSizes, size, toppingSelections],
+  );
   return (
     <Query<ToppingsData>
       query={TOPPINGS_QUERY}
       variables={{ pizzaSize: size.toUpperCase() }}
+      onCompleted={updateSelectedToppings}
     >
       {({ loading, error, data }) => (
         <div>
@@ -89,6 +113,9 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes }) => {
                 )}
             </div>
           </form>
+          {data && data.pizzaSizeByName && (
+            <p>Total: ${total(data.pizzaSizeByName.toppings)}</p>
+          )}
         </div>
       )}
     </Query>

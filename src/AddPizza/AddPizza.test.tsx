@@ -152,4 +152,25 @@ describe("AddPizza", () => {
       await wait(() => getByLabelText(size2Topping, { exact: false }));
     });
   });
+
+  it("displays the total price of the pizza and selected toppings", async () => {
+    const toppings = data.pizzaSizeByName.toppings.map(x => x.topping);
+    const pizzaPrice = pizzaSizes[0].basePrice;
+    const { getByLabelText, getByText } = render([mockGql()]);
+
+    const inputs = await waitForElement(() =>
+      toppings.map(({ name }) => getByLabelText(name, { exact: false })),
+    );
+    const totalContainer = getByText(/Total:/);
+
+    // Pizza only - first input defaults to checked
+    fireEvent.click(inputs[0]);
+    expect(totalContainer).toHaveTextContent(`$${pizzaPrice}`);
+
+    // Pizza plus a topping
+    fireEvent.click(inputs[1]);
+    expect(totalContainer).toHaveTextContent(
+      `$${pizzaPrice + toppings[1].price}`,
+    );
+  });
 });
