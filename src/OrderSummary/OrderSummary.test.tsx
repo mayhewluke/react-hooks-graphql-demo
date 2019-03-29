@@ -17,57 +17,56 @@ import OrderSummary, { SIZES_QUERY } from "./OrderSummary";
 jest.mock("../AddPizza/AddPizza", () => jest.fn(() => false));
 
 describe("OrderSummary", () => {
-  const render = (response: Partial<MockedResponse>) =>
-    rtlRender(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: SIZES_QUERY,
-            },
-            ...response,
-          },
-        ]}
-        addTypename={false}
-      >
-        <OrderSummary />
-      </MockedProvider>,
-    );
   const pizzaSizes = [
     { name: "mini", maxToppings: 1, basePrice: 1 },
     { name: "jumbo", maxToppings: 2, basePrice: 2 },
   ];
+  const request = {
+    query: SIZES_QUERY,
+  };
+  const data = { pizzaSizes };
+  const mockGql = {
+    request,
+    result: { data },
+  };
+  const render = (mocks: MockedResponse[]) =>
+    rtlRender(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <OrderSummary />
+      </MockedProvider>,
+    );
 
   it("shows a loading message while pizza info is loading", () => {
-    const { container } = render({ result: { data: { pizzaSizes } } });
+    const { container } = render([mockGql]);
     expect(container).toHaveTextContent(/loading/i);
   });
 
   it("shows an error message if the network fails", async () => {
-    const { container } = render({ error: new Error("Something went wrong!") });
+    const { container } = render([
+      { request, error: new Error("Something went wrong!") },
+    ]);
     await wait(() => expect(container).toHaveTextContent(/error/i));
   });
 
   it("shows an error message if the query fails", async () => {
-    const { container } = render({
-      result: { errors: [{ message: "Error!" }] },
-    });
+    const { container } = render([
+      {
+        request,
+        result: { errors: [{ message: "Error!" }] },
+      },
+    ]);
     await wait(() => expect(container).toHaveTextContent(/error/i));
   });
 
   it("displays a message when no pizzas have been added yet", async () => {
-    const { getByTestId } = render({
-      result: { data: { pizzaSizes } },
-    });
+    const { getByTestId } = render([mockGql]);
     await wait(() =>
       expect(getByTestId("order").textContent).toMatchSnapshot(),
     );
   });
 
   it("adds the pizza to the list when the addPizza callback is called", async () => {
-    const { container, queryByText } = render({
-      result: { data: { pizzaSizes } },
-    });
+    const { container, queryByText } = render([mockGql]);
 
     await wait(() => expect(queryByText(/loading/i)).not.toBeInTheDocument());
     const addPizzaCallback = (AddPizza as any).mock.calls.slice(-1)[0][0]
@@ -84,9 +83,7 @@ describe("OrderSummary", () => {
   });
 
   it("displays the total cost of all pizzas added", async () => {
-    const { container, queryByText } = render({
-      result: { data: { pizzaSizes } },
-    });
+    const { container, queryByText } = render([mockGql]);
 
     await wait(() => expect(queryByText(/loading/i)).not.toBeInTheDocument());
     const addPizza = (price: number) =>
@@ -104,9 +101,7 @@ describe("OrderSummary", () => {
   it("removes the pizza from the list when the remove button is clicked", async () => {
     const removeIndex = 1;
     const pizzas = ["small", "big", "jumbo"];
-    const { queryByText, queryAllByText } = render({
-      result: { data: { pizzaSizes } },
-    });
+    const { queryByText, queryAllByText } = render([mockGql]);
     const addPizza = (size: string) =>
       (AddPizza as any).mock.calls
         .slice(-1)[0][0]

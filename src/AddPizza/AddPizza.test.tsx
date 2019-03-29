@@ -98,7 +98,8 @@ describe("AddPizza", () => {
       return Promise.all(
         toppings.map(({ topping: { name, price } }) =>
           wait(() =>
-            // Check that the label contains both the topping name and the price
+            // Checks that the label contains both the topping name and the
+            // price, simultaneously
             expect(
               (getByLabelText(name, { exact: false }) as HTMLInputElement)
                 .labels![0],
