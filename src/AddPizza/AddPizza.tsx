@@ -38,19 +38,25 @@ interface Props {
   }) => void;
 }
 
+const enabled = (items: Record<string, boolean>) =>
+  Object.keys(items).filter(item => items[item]);
+
 const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
+  // State
   const [size, setSize] = useState(pizzaSizes[0].name);
   const [toppingSelections, setToppingSelections] = useState({} as Record<
     string,
     boolean
   >);
+
+  // Actions
   const toggleTopping = useCallback(
     (name: string) =>
       setToppingSelections({
         ...toppingSelections,
         [name]: !toppingSelections[name],
       }),
-    [toppingSelections],
+    [setToppingSelections, toppingSelections],
   );
   const updateSelectedToppings = useCallback(
     (data: ToppingsData) =>
@@ -63,11 +69,17 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
           {},
         ),
       ),
-    [toppingSelections],
+    [setToppingSelections],
+  );
+
+  // Helper functions
+  const sizeByName = useCallback(
+    (n: string) => pizzaSizes.filter(({ name }) => name === n)[0],
+    [pizzaSizes],
   );
   const total = useCallback(
     toppings =>
-      pizzaSizes.filter(({ name }) => name === size)[0].basePrice +
+      sizeByName(size).basePrice +
       toppings.reduce(
         (sum: number, { topping: { name, price } }: { topping: Topping }) =>
           toppingSelections[name] ? sum + price : sum,
@@ -75,12 +87,13 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
       ),
     [pizzaSizes, size, toppingSelections],
   );
-  const maxToppings = pizzaSizes.filter(({ name }) => name === size)[0]
-    .maxToppings;
+
+  // Values
+  const maxToppings = sizeByName(size).maxToppings;
   const maxToppingsReached =
-    maxToppings !== null &&
-    Object.values(toppingSelections).filter(selected => selected).length >=
-      maxToppings;
+    maxToppings !== null && enabled(toppingSelections).length >= maxToppings;
+
+  // Render
   return (
     <Query<ToppingsData>
       query={TOPPINGS_QUERY}
@@ -109,7 +122,7 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
               {data &&
                 data.pizzaSizeByName &&
                 data.pizzaSizeByName.toppings.map(
-                  ({ topping: { name, price }, defaultSelected }) => (
+                  ({ topping: { name, price } }) => (
                     <div key={name} className="topping">
                       <label htmlFor={name}>
                         {name}: {to$(price)}
@@ -118,7 +131,7 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
                         id={name}
                         name={name}
                         type="checkbox"
-                        checked={toppingSelections[name] || defaultSelected}
+                        checked={toppingSelections[name]}
                         onChange={() => toggleTopping(name)}
                         disabled={
                           !toppingSelections[name] && maxToppingsReached
@@ -144,9 +157,7 @@ const AddPizza: React.SFC<Props> = ({ pizzaSizes, addPizza }) => {
                   addPizza({
                     size,
                     price: total(data.pizzaSizeByName.toppings),
-                    toppings: Object.keys(toppingSelections).filter(
-                      name => toppingSelections[name],
-                    ),
+                    toppings: enabled(toppingSelections),
                   })
                 }
               >
